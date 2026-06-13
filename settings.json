@@ -66,7 +66,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "printf '%s' \"$TOOL_INPUT\" | grep -qE 'git\\s+(merge|push)|gh\\s+pr\\s+create' && [ \"${PWD#/home/allen/newcompany/opsis-ws}\" != \"$PWD\" ] && echo '[opsis-knowledge] 偵測到 git merge/push 或 gh pr create —— 若這個分支的工作已完成，記得執行 /save-plan 把對應的 plan 檔整理存入 Opsis_Knowledge，避免內容散落。' || true"
+            "command": "printf '%s' \"$TOOL_INPUT\" | grep -qE 'git\\s+(merge|push)|gh\\s+pr\\s+create' && [ \"${PWD#/home/allen/newcompany/opsis-ws}\" != \"$PWD\" ] && python3 /home/allen/.claude/scripts/opsis-knowledge-pending-plans-check.sh || true"
           }
         ]
       }
