@@ -69,16 +69,29 @@
 讀過、對理解有幫助的檔案。
 
 **若 `$VAULT` 為 Opsis_Knowledge 且筆記分類為 02-Areas**，額外在 frontmatter
-加入以下欄位（供 `sync-opsis-knowledge` 之後比對程式碼是否有變動）：
+加入 `source` 欄位（供 `sync-opsis-knowledge` 之後比對程式碼是否有變動）。
+`source` 是一個 list，**每個讀過的子 repo 各佔一項**（一篇筆記常常同時讀了
+`opsis/` 和 `buildroot/` 等多個 repo，分開記錄才能各自追蹤）：
 
 ```yaml
-source_repo: <子repo名稱，例如 opsis / buildroot / manifest>
-source_paths:
-  - <相對於該 repo 根目錄的路徑...>
-source_commit: <寫筆記當下該 repo 的 HEAD commit hash，用 git rev-parse HEAD 取得>
+source:
+  - repo: <子repo名稱，例如 opsis / buildroot / manifest>
+    paths:
+      - <相對於該 repo 根目錄的路徑...>
+    symbols:        # 選填：本次筆記實際聚焦的函式/符號名稱
+      - <函式名稱...>
+    commit: <寫筆記當下該 repo 的 HEAD commit hash，用 git rev-parse HEAD 取得>
 ```
 
-其他情況（非程式碼筆記、或 `$VAULT` 為 Obsidian_Knowledge）省略這三個欄位。
+- `paths`：必填，列出讀過、對理解有幫助的檔案路徑。
+- `symbols`：選填。若筆記主要是描述特定函式的行為（而不是整個檔案），列出這些
+  函式名稱。`sync-opsis-knowledge` 會優先用 `<repo>/.codegraph/codegraph.db`
+  把符號解析成檔案+行號範圍，用 `git log -L` 只追蹤這些函式本身的變動，避免
+  同檔案裡其他函式的修改觸發不相關的 stale 標記。若該 repo 沒有 codegraph
+  索引，或省略此欄位，則回退為整個 `paths` 的檔案層級比對。
+- `commit`：必填，該 repo 寫筆記當下的 HEAD commit hash。
+
+其他情況（非程式碼筆記、或 `$VAULT` 為 Obsidian_Knowledge）省略 `source` 欄位。
 
 ---
 

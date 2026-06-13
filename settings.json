@@ -50,6 +50,15 @@
             "command": "CLAUDE_PLUGIN_ROOT=/home/allen/.claude/plugins/understand-anything/understand-anything-plugin printf '%s' \"$TOOL_INPUT\" | grep -qE 'git\\s+(commit|merge|cherry-pick|rebase)' && [ -f .understand-anything/config.json ] && grep -q '\"autoUpdate\".*true' .understand-anything/config.json && [ -f .understand-anything/knowledge-graph.json ] && echo \"[understand-anything] Commit detected with auto-update enabled. You MUST read the file at ${CLAUDE_PLUGIN_ROOT}/hooks/auto-update-prompt.md and execute its instructions to incrementally update the knowledge graph. Do not ask the user for confirmation — just do it.\" || true"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf '%s' \"$TOOL_INPUT\" | grep -qE 'git\\s+(merge|push)|gh\\s+pr\\s+create' && [ \"${PWD#/home/allen/newcompany/opsis-ws}\" != \"$PWD\" ] && echo '[opsis-knowledge] 偵測到 git merge/push 或 gh pr create —— 若這個分支的工作已完成，記得執行 /save-plan 把對應的 plan 檔整理存入 Opsis_Knowledge，避免內容散落。' || true"
+          }
+        ]
       }
     ]
   }
