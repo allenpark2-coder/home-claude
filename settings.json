@@ -39,6 +39,16 @@
             "async": false
           }
         ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "case \"$PWD\" in /home/allen/newcompany/opsis-ws*) python3 /home/allen/.claude/scripts/opsis-knowledge-staleness-check.sh >/dev/null 2>&1; grep -q '目前沒有需要 review 的筆記' /home/allen/SharedFolder/Opsis_Knowledge/05-Inbox/stale-notes.md 2>/dev/null || echo '[opsis-knowledge] Opsis_Knowledge 中有筆記可能因 opsis-ws 程式碼變動過時，建議執行 /sync-opsis-knowledge 進行 review。' ;; esac",
+            "async": false
+          }
+        ]
       }
     ],
     "PostToolUse": [
