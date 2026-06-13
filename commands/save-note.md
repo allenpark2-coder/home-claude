@@ -1,16 +1,31 @@
 將使用者提供的內容整理成筆記，儲存到 Obsidian vault。
 
 ## Vault 路徑
-`/home/allen/SharedFolder/Obsidian_Knowledge`
+
+- 預設（一般技術知識）：`/home/allen/SharedFolder/Obsidian_Knowledge`
+- Opsis 專案專用：`/home/allen/SharedFolder/Opsis_Knowledge`
 
 ## 執行步驟
 
-### Step 1 — 搜尋既有相關筆記
-在決定分類/檔名之前，先搜尋 vault 是否已有主題重疊的筆記：
+### Step 0 — 判斷目標 vault（`$VAULT`）
 
-- 用內容的關鍵字（中英文都試）搜尋 vault（`grep -ri` 或翻對應分類資料夾的
-  `Index.md`），特別留意 `03-Resources/Tools/Index.md`——這個清單已經很長，
-  最容易出現重複主題。
+決定本次筆記要存到哪個 vault，後續所有步驟中的 `$VAULT` 皆代表這裡判斷出的路徑：
+
+- 使用者在指令中明確指定時（例如「存到 Opsis vault」「存到 Obsidian vault」），
+  以使用者指定為準
+- 否則依目前對話的工作目錄/內容主題判斷：
+  - 工作目錄在 `/home/allen/newcompany/opsis-ws` 之下，或筆記內容是關於該
+    repo（`manifest/`、`opsis/`、`buildroot/`、`.claude-config/`）的程式碼、
+    設計、進度 → `$VAULT = /home/allen/SharedFolder/Opsis_Knowledge`
+  - 其他情況 → `$VAULT = /home/allen/SharedFolder/Obsidian_Knowledge`
+
+### Step 1 — 搜尋既有相關筆記
+在決定分類/檔名之前，先搜尋 `$VAULT` 是否已有主題重疊的筆記：
+
+- 用內容的關鍵字（中英文都試）搜尋 `$VAULT`（`grep -ri` 或翻對應分類資料夾的
+  `Index.md`）。若 `$VAULT` 為 Obsidian_Knowledge，特別留意
+  `03-Resources/Tools/Index.md`——這個清單已經很長，最容易出現重複主題
+  （Opsis_Knowledge 目前尚無對應的長清單，可略過此檢查）。
 - 找到主題明顯重疊的既有筆記時，**不要直接新增一篇平行的筆記**，依重疊程度
   二選一：
   - **大幅重疊**：更新既有筆記內容（補充新資訊、修正過時內容），不建立新檔。
@@ -48,7 +63,22 @@
 - `相對於 repo 根目錄的路徑/檔案名稱.h`
 ```
 
-路徑使用相對路徑（相對於目前對話所在專案的 repo 根目錄），並只列本次真正讀過、對理解有幫助的檔案。
+路徑使用相對路徑（相對於目前對話所在專案的 repo 根目錄）。opsis-ws 是多 repo
+工作區（`manifest/`、`opsis/`、`buildroot/`、`.claude-config/`），路徑前面加上
+子 repo 名稱以標明屬於哪個倉庫（例如 `opsis/src/ai/nanodet.c`）。只列本次真正
+讀過、對理解有幫助的檔案。
+
+**若 `$VAULT` 為 Opsis_Knowledge 且筆記分類為 02-Areas**，額外在 frontmatter
+加入以下欄位（供 `sync-opsis-knowledge` 之後比對程式碼是否有變動）：
+
+```yaml
+source_repo: <子repo名稱，例如 opsis / buildroot / manifest>
+source_paths:
+  - <相對於該 repo 根目錄的路徑...>
+source_commit: <寫筆記當下該 repo 的 HEAD commit hash，用 git rev-parse HEAD 取得>
+```
+
+其他情況（非程式碼筆記、或 `$VAULT` 為 Obsidian_Knowledge）省略這三個欄位。
 
 ---
 
@@ -191,7 +221,7 @@ tags: []
 
 ### Step 9 — 更新當週周報草稿
 
-周報草稿路徑：`/home/allen/SharedFolder/Obsidian_Knowledge/06-Weekly/YYYY-WNN.md`
+周報草稿路徑：`$VAULT/06-Weekly/YYYY-WNN.md`
 
 若檔案不存在，建立新檔，內容如下：
 ```markdown
@@ -215,14 +245,14 @@ tags: []
 Vault 是 git repo，所有筆記/Index/週報變更最後都要 commit：
 
 ```bash
-cd /home/allen/SharedFolder/Obsidian_Knowledge
+cd $VAULT
 git add -A
 git commit -m "note: <筆記標題或更新摘要>"
 ```
 
 若出現 `detected dubious ownership` 錯誤，先執行一次：
 ```bash
-git config --global --add safe.directory /home/allen/SharedFolder/Obsidian_Knowledge
+git config --global --add safe.directory $VAULT
 ```
 再重新 `git add -A && git commit`。
 
@@ -244,6 +274,7 @@ git config core.fileMode false
 
 ### Step 11 — 回報結果
 告訴使用者：
+- 存到哪個 vault（`$VAULT`）以及 Step 0 的判斷依據（自動判斷 or 使用者指定）
 - 儲存路徑（或「更新了既有筆記 XXX」，依 Step 1 判斷）
 - 分類理由（若使用者沒有指定）
 - Step 1 搜尋結果：找到哪些重疊筆記、採取的處理方式（新增 / 更新 / 雙向連結）
