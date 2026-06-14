@@ -14,13 +14,16 @@ Obsidian_Knowledge）`01-Projects` 下的工作日誌筆記，避免計畫內容
 
 ### Step 0 — 判斷目標 vault（沿用 `/save-note` Step 0）
 
+讀取 `~/.claude/opsis-knowledge.config`，取得 `OK_WORKSPACE`、
+`OK_PROJECT_VAULT`、`OK_GENERAL_VAULT`、`OK_PROJECT_DIR`。
+
 依計畫內容與工作目錄判斷 `$VAULT`：
 
-- 計畫內容是關於 `/home/allen/newcompany/opsis-ws`（manifest/opsis/buildroot/
-  .claude-config）的開發 → `$VAULT = /home/allen/SharedFolder/Opsis_Knowledge`，
-  目標專案資料夾預設 `01-Projects/Opsis-Firmware/`
-- 其他情況 → `$VAULT = /home/allen/SharedFolder/Obsidian_Knowledge`，目標專案
-  資料夾依 `/save-note` Step 2 的分類邏輯判斷（或詢問使用者）
+- 計畫內容是關於 `$OK_WORKSPACE`（例如 manifest/opsis/buildroot/
+  .claude-config 等子 repo）的開發 → `$VAULT = $OK_PROJECT_VAULT`，
+  目標專案資料夾預設 `$OK_PROJECT_DIR`
+- 其他情況 → `$VAULT = $OK_GENERAL_VAULT`，目標專案資料夾依 `/save-note`
+  Step 2 的分類邏輯判斷（或詢問使用者）
 - 使用者可在指令中明確覆寫 vault 與目標專案資料夾
 
 ### Step 1 — 搜尋既有相關筆記（沿用 `/save-note` Step 1）

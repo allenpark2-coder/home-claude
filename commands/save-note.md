@@ -1,9 +1,12 @@
 將使用者提供的內容整理成筆記，儲存到 Obsidian vault。
 
-## Vault 路徑
+## 設定
 
-- 預設（一般技術知識）：`/home/allen/SharedFolder/Obsidian_Knowledge`
-- Opsis 專案專用：`/home/allen/SharedFolder/Opsis_Knowledge`
+讀取 `~/.claude/opsis-knowledge.config`，取得以下變數（後續步驟中使用）：
+
+- `OK_WORKSPACE`：專案原始碼所在的工作區
+- `OK_PROJECT_VAULT`：專案知識 vault
+- `OK_GENERAL_VAULT`：一般/跨專案技術知識 vault
 
 ## 執行步驟
 
@@ -11,21 +14,21 @@
 
 決定本次筆記要存到哪個 vault，後續所有步驟中的 `$VAULT` 皆代表這裡判斷出的路徑：
 
-- 使用者在指令中明確指定時（例如「存到 Opsis vault」「存到 Obsidian vault」），
+- 使用者在指令中明確指定時（例如「存到專案 vault」「存到一般 vault」），
   以使用者指定為準
 - 否則依目前對話的工作目錄/內容主題判斷：
-  - 工作目錄在 `/home/allen/newcompany/opsis-ws` 之下，或筆記內容是關於該
-    repo（`manifest/`、`opsis/`、`buildroot/`、`.claude-config/`）的程式碼、
-    設計、進度 → `$VAULT = /home/allen/SharedFolder/Opsis_Knowledge`
-  - 其他情況 → `$VAULT = /home/allen/SharedFolder/Obsidian_Knowledge`
+  - 工作目錄在 `$OK_WORKSPACE` 之下，或筆記內容是關於該工作區下子 repo
+    （例如 `manifest/`、`opsis/`、`buildroot/`、`.claude-config/`）的程式碼、
+    設計、進度 → `$VAULT = $OK_PROJECT_VAULT`
+  - 其他情況 → `$VAULT = $OK_GENERAL_VAULT`
 
 ### Step 1 — 搜尋既有相關筆記
 在決定分類/檔名之前，先搜尋 `$VAULT` 是否已有主題重疊的筆記：
 
 - 用內容的關鍵字（中英文都試）搜尋 `$VAULT`（`grep -ri` 或翻對應分類資料夾的
-  `Index.md`）。若 `$VAULT` 為 Obsidian_Knowledge，特別留意
+  `Index.md`）。若 `$VAULT` 為 `$OK_GENERAL_VAULT`，特別留意
   `03-Resources/Tools/Index.md`——這個清單已經很長，最容易出現重複主題
-  （Opsis_Knowledge 目前尚無對應的長清單，可略過此檢查）。
+  （`$OK_PROJECT_VAULT` 目前尚無對應的長清單，可略過此檢查）。
 - 找到主題明顯重疊的既有筆記時，**不要直接新增一篇平行的筆記**，依重疊程度
   二選一：
   - **大幅重疊**：更新既有筆記內容（補充新資訊、修正過時內容），不建立新檔。
@@ -63,12 +66,12 @@
 - `相對於 repo 根目錄的路徑/檔案名稱.h`
 ```
 
-路徑使用相對路徑（相對於目前對話所在專案的 repo 根目錄）。opsis-ws 是多 repo
-工作區（`manifest/`、`opsis/`、`buildroot/`、`.claude-config/`），路徑前面加上
-子 repo 名稱以標明屬於哪個倉庫（例如 `opsis/src/ai/nanodet.c`）。只列本次真正
-讀過、對理解有幫助的檔案。
+路徑使用相對路徑（相對於目前對話所在專案的 repo 根目錄）。`$OK_WORKSPACE` 是多
+repo 工作區（例如 `manifest/`、`opsis/`、`buildroot/`、`.claude-config/`），
+路徑前面加上子 repo 名稱以標明屬於哪個倉庫（例如 `opsis/src/ai/nanodet.c`）。
+只列本次真正讀過、對理解有幫助的檔案。
 
-**若 `$VAULT` 為 Opsis_Knowledge 且筆記分類為 02-Areas**，額外在 frontmatter
+**若 `$VAULT` 為 `$OK_PROJECT_VAULT` 且筆記分類為 02-Areas**，額外在 frontmatter
 加入 `source` 欄位（供 `sync-opsis-knowledge` 之後比對程式碼是否有變動）。
 `source` 是一個 list，**每個讀過的子 repo 各佔一項**（一篇筆記常常同時讀了
 `opsis/` 和 `buildroot/` 等多個 repo，分開記錄才能各自追蹤）：

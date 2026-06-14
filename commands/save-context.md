@@ -8,12 +8,15 @@
 
 ### Step 0 — 判斷目標 vault（沿用 `/save-note` Step 0）
 
+讀取 `~/.claude/opsis-knowledge.config`，取得 `OK_WORKSPACE`、
+`OK_PROJECT_VAULT`、`OK_GENERAL_VAULT`。
+
 依目前工作目錄/對話內容判斷 `$VAULT`：
 
-- 工作目錄在 `/home/allen/newcompany/opsis-ws` 之下，或對話內容是關於該 repo
-  （`manifest/`、`opsis/`、`buildroot/`、`.claude-config/`）的程式碼/設計/進度
-  → `$VAULT = /home/allen/SharedFolder/Opsis_Knowledge`
-- 其他情況 → `$VAULT = /home/allen/SharedFolder/Obsidian_Knowledge`
+- 工作目錄在 `$OK_WORKSPACE` 之下，或對話內容是關於該工作區下子 repo
+  （例如 `manifest/`、`opsis/`、`buildroot/`、`.claude-config/`）的程式碼/
+  設計/進度 → `$VAULT = $OK_PROJECT_VAULT`
+- 其他情況 → `$VAULT = $OK_GENERAL_VAULT`
 - 使用者可在指令中明確覆寫
 
 ### Step 1 — 整理摘要

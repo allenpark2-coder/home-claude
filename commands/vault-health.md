@@ -6,11 +6,12 @@
 
 ### Step 1 — 執行健康檢查腳本
 
-對兩個 vault 各執行一次：
+讀取 `~/.claude/opsis-knowledge.config`，取得 `OK_PROJECT_VAULT`、
+`OK_GENERAL_VAULT`，對兩個 vault 各執行一次：
 
 ```bash
-python3 ~/.claude/scripts/opsis-knowledge-vault-health-check.sh /home/allen/SharedFolder/Opsis_Knowledge
-python3 ~/.claude/scripts/opsis-knowledge-vault-health-check.sh /home/allen/SharedFolder/Obsidian_Knowledge
+python3 ~/.claude/scripts/opsis-knowledge-vault-health-check.sh $OK_PROJECT_VAULT
+python3 ~/.claude/scripts/opsis-knowledge-vault-health-check.sh $OK_GENERAL_VAULT
 ```
 
 腳本會覆寫各自的 `05-Inbox/vault-health.md`。

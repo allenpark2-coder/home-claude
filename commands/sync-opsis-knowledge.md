@@ -1,8 +1,11 @@
 處理 `opsis-knowledge-staleness-check.sh` 產生的 stale notes 清單，將
 Opsis_Knowledge 中因 opsis-ws 程式碼變動而可能過時的筆記進行 review 與更新。
 
-## Vault 路徑
-`/home/allen/SharedFolder/Opsis_Knowledge`（以下簡稱 `$VAULT`）
+## 設定
+
+讀取 `~/.claude/opsis-knowledge.config`，取得：
+- `OK_WORKSPACE`：專案原始碼工作區
+- `OK_PROJECT_VAULT`：專案知識 vault（以下簡稱 `$VAULT`）
 
 ## 前置
 
@@ -36,12 +39,12 @@ bash ~/.claude/scripts/opsis-knowledge-staleness-check.sh
 2. 對該筆記在 Step 1 中**被標記**的每一個 `source[]` 項目，分別執行：
    - **符號層級標記**（`符號 X (file:lines) — N 個新 commit`）：
      ```bash
-     git -C /home/allen/newcompany/opsis-ws/<repo> log -p <commit>..HEAD -L<lines>:<file>
+     git -C $OK_WORKSPACE/<repo> log -p <commit>..HEAD -L<lines>:<file>
      ```
      （`<lines>` 與 `<file>` 取自 stale-notes.md 中列出的 `file:lines`）
    - **檔案層級標記**（`檔案層級 — N 個新 commit，涉及路徑: ...`）：
      ```bash
-     git -C /home/allen/newcompany/opsis-ws/<repo> log -p <commit>..HEAD -- <paths...>
+     git -C $OK_WORKSPACE/<repo> log -p <commit>..HEAD -- <paths...>
      ```
    閱讀實際的程式碼變動內容。
 3. 判斷筆記內容是否仍正確：
@@ -49,8 +52,8 @@ bash ~/.claude/scripts/opsis-knowledge-staleness-check.sh
    - **需要更新**：變動影響筆記描述的行為、參數、流程等，依變動內容修改筆記
      對應段落（例如「原理 / 細節」「常見問題」），保持原有格式與章節結構。
 4. 無論該 `source[]` 項目的內容是否修改，都將**該項目自己的** `commit` 欄位
-   更新為目前 opsis-ws `<repo>` 的 HEAD commit hash（`git -C
-   /home/allen/newcompany/opsis-ws/<repo> rev-parse HEAD`）。
+   更新為目前 `$OK_WORKSPACE` 下 `<repo>` 的 HEAD commit hash（`git -C
+   $OK_WORKSPACE/<repo> rev-parse HEAD`）。
 
    **只更新被標記的 `source[]` 項目**，同一篇筆記中其他未被標記的項目
    （不同 repo 或不同 paths/symbols）保持原樣，不要連動更新其 `commit`。
